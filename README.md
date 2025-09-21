@@ -30,7 +30,7 @@ It allows users to **track exercises via webcam, count repetitions automatically
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/DonikTana/exercise-tracker.git
+git clone https://github.com/DonikTana/Exercise-Form-Checker.git
 cd exercise-tracker
 
 2. Create a Virtual Environment & Install Dependencies
