@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4 text-center">Welcome, {{ session.get('username') }}!</h2>
+<h2>Your Exercise Logs</h2>
+<div class="mt-4">
+  <a href="{{ url_for('exercise_chart') }}" target="_blank" class="btn btn-primary me-2">
+    View Exercise Chart
+  </a>
+  <a href="{{ url_for('calories_chart') }}" target="_blank" class="btn btn-warning">
+    View Calories Chart
+  </a>
+</div>
+
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Your Recent Exercise Logs</h4>
+    <div>
+        <button id="switch-exercise-btn" class="btn btn-outline-primary me-2">Switch Exercise</button>
+        <button id="toggle-tracking-btn" class="btn btn-success">Start Tracking</button>
+        <button id="reset-counter-btn" class="btn btn-warning ms-2">Reset Count</button>
+    </div>
+</div>
+
+<div class="card mb-4 shadow-sm">
+    <div class="card-body text-center">
+        <img id="video-feed" src="{{ url_for('video_feed') }}" class="img-fluid rounded" style="max-height: 360px;" alt="Exercise Video Feed" />
+    </div>
+</div>
+
+<table class="table table-striped table-hover shadow-sm">
+    <thead>
+        <tr>
+            <th>Exercise</th>
+            <th>Count</th>
+            <th>Date & Time</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if logs %}
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.exercise_type }}</td>
+                <td>{{ log.count }}</td>
+                <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">No exercise logs yet.</td>
+            </tr>
+        {% endif %}
+    </tbody>
+</table>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let tracking = false;
+    const toggleBtn = document.getElementById('toggle-tracking-btn');
+    const switchBtn = document.getElementById('switch-exercise-btn');
+    const resetBtn = document.getElementById('reset-counter-btn');
+
+    toggleBtn.addEventListener('click', () => {
+        tracking = !tracking;
+        fetch(`/toggle_tracking?active=${tracking}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to toggle tracking');
+                toggleBtn.textContent = tracking ? 'Stop Tracking' : 'Start Tracking';
+                toggleBtn.classList.toggle('btn-success', tracking);
+                toggleBtn.classList.toggle('btn-danger', !tracking);
+            })
+            .catch(console.error);
+    });
+
+    switchBtn.addEventListener('click', () => {
+        fetch('/switch_exercise')
+            .then(() => {
+                alert('Exercise switched!');
+            })
+            .catch(console.error);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        fetch('/reset_counter')
+            .then(() => {
+                alert('Exercise count reset!');
+            })
+            .catch(console.error);
+    });
+</script>
+{% endblock %}
